@@ -13,8 +13,10 @@
 
 // Motor parameters. These are based on a Pololu #2285 motor with 48cpr
 // encoder.
-const float GEAR_RATIO = 210.59;
-const float ENCODER_CPR = 12;
+//const float GEAR_RATIO = 210.59;
+//const float ENCODER_CPR = 12;
+const float GEAR_RATIO = 46.8512;
+const float ENCODER_CPR = 24;  // make this 48 if using both 'A' and 'B' edges
 
 // Number of encoder ticks per revolution of the wheel.
 const float TICKS_PER_REV = GEAR_RATIO * ENCODER_CPR;
@@ -31,7 +33,7 @@ const int PID_TUNING_TICKS_PER_SEC = 0.6 * MAX_REVS_PER_SEC * TICKS_PER_REV;
 const int ONBOARD_SWITCH_PIN = A7;
 
 // Pins for the Pololu motor encoder outputs.
-const int M1_A = 7;
+const int M1_A = 8;  // changed to pin 8
 const int M1_B = 11;
 const int M2_A = 15;
 const int M2_B = 16;
@@ -81,8 +83,8 @@ float loopTime = 0.0;
 // Set to 1 to use Ku only, to determine oscillation point.
 #define USE_KU_ONLY 0
 
-const float Ku = .15;
-const float Tu = .1142857143;
+const float Ku = .25; // changed per my tuning
+const float Tu = .11429;  // rounded, but same number
 
 #define LESS_AGGRESSIVE 0
 
@@ -112,10 +114,14 @@ void setup() {
   delay(3000);
 
   enableInterrupt(M1_A, leftAChange, CHANGE);
-  enableInterrupt(M1_B, leftBChange, CHANGE);
+  // enableInterrupt(M1_B, leftBChange, CHANGE);  // not using 'B' edges
   enableInterrupt(M2_A, rightAChange, CHANGE);
-  enableInterrupt(M2_B, rightBChange, CHANGE);
+  // enableInterrupt(M2_B, rightBChange, CHANGE);
 
+  // Uncomment to flip a motor's direction:
+  motors.flipM1(true);  // my motor is wired the other way
+  //motors.flipM2(true);
+  
   Serial.print("Time (s)\tLeft Target\tLeft Speed\tLeft Cum Error\tLeft Motor");
   Serial.print("\tRight Target\tRight Speed\tRight Cum Error\tRight Motor");
   Serial.println();
